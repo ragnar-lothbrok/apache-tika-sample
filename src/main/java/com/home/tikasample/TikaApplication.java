@@ -7,4 +7,5 @@ public class TikaApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(TikaApplication.class, args);
 	}
+	
 }
