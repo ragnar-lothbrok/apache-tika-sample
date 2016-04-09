@@ -2,23 +2,32 @@
 <html>
 
 <head>
-  <!-- JQuery import -->
-  <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<!-- JQuery import -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
 </head>
 
 <body>
 
-  <!-- Upload file form -->
-  <form id="upload-file-form">
-    <label for="upload-file-input">Upload your file:</label>
-    <input id="upload-file-input" type="file" name="uploadfile" accept="*" />
-    <br />
-    <span id="upload-file-message"></span>
-  </form>
-  <br />
-  
-  <!-- Javascript functions -->
-  <script>
+	<!-- Upload file form -->
+	<form id="upload-file-form">
+	<div class="form-group">
+		<label class="control-label">Type
+			to Music</label>
+		<div class="control-label">
+			<select class="form-control" name="location" id="location">
+				<option value="Other">Other</option>
+				<option value="Image">Image</option>
+			</select>
+		</div>
+	</div>
+		<label for="upload-file-input">Upload your file:</label> <input
+			id="upload-file-input" type="file" name="uploadfile" accept="*" /> <br />
+		<span id="upload-file-message"></span>
+	</form>
+	<br />
+
+	<!-- Javascript functions -->
+	<script>
   
     // bind the on-change event for the input element (triggered when a file
     // is chosen)
@@ -31,7 +40,7 @@
      */
     function uploadFile() {
       $.ajax({
-        url: "/file",
+        url: "/file?uploadType="+document.getElementById("location").value,
         type: "POST",
         data: new FormData($("#upload-file-form")[0]),
         enctype: 'multipart/form-data',
@@ -55,7 +64,7 @@
       });
     } // function uploadFile
   </script>
-  
+
 </body>
 
 </html>

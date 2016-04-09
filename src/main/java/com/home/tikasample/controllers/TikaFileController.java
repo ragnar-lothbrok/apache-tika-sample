@@ -14,6 +14,8 @@ import org.apache.tika.parser.AbstractParser;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
+import org.apache.tika.parser.image.ImageParser;
+import org.apache.tika.parser.jpeg.JpegParser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +42,7 @@ public class TikaFileController {
 	public TikaFileController() {
 		try {
 			printHiearchy(AbstractParser.class.getPackage().getName(), parserObjectMap);
-			logger.info("Map : >> "+parserObjectMap);
+			logger.info("Map : >> " + parserObjectMap);
 		} catch (Exception e) {
 			logger.error("Exception occured {}", e);
 		}
@@ -48,14 +50,20 @@ public class TikaFileController {
 
 	@RequestMapping(
 		method = RequestMethod.POST)
-	public Map<String, Object> acceptAndReturnData(@RequestParam("uploadfile") MultipartFile[] files) throws IOException {
+	public Map<String, Object> acceptAndReturnData(@RequestParam("uploadType") String uploadType, @RequestParam("uploadfile") MultipartFile[] files)
+			throws IOException {
 		Map<String, Object> metadataInformation = new HashMap<String, Object>();
 		Metadata metadata = new Metadata();
 		ContentHandler handler = new BodyContentHandler(100 * 1024 * 1024);
+		Parser parser = null;
 		ParseContext context = new ParseContext();
-		Parser parser = new AutoDetectParser();
+		InputStream stream  = files[0].getInputStream();
 		metadataInformation.put("Original Name", files[0].getOriginalFilename());
-		InputStream stream = files[0].getInputStream();
+		if ("other".equalsIgnoreCase(uploadType)) {
+			parser = new AutoDetectParser();
+		}else{
+			parser = new ImageParser();
+		}
 		try {
 			parser.parse(stream, handler, metadata, context);
 		} catch (TikaException e) {
@@ -67,10 +75,10 @@ public class TikaFileController {
 		} finally {
 			stream.close(); // close the stream
 		}
-		return getInformation(metadata, metadataInformation,handler);
+		return getInformation(metadata, metadataInformation, handler);
 	}
 
-	public Map<String, Object> getInformation(Metadata metadata, Map<String, Object> metadataInformation,ContentHandler handler) {
+	public Map<String, Object> getInformation(Metadata metadata, Map<String, Object> metadataInformation, ContentHandler handler) {
 		for (String key : metadata.names()) {
 			metadataInformation.put(key, metadata.get(key));
 		}
